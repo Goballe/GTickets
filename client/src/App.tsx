@@ -17,6 +17,7 @@ function Router() {
   const [isLoading, setIsLoading] = useState(true);
   const [location, setLocation] = useLocation();
 
+  // Efecto para cargar el usuario
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -37,6 +38,23 @@ function Router() {
     
     fetchUser();
   }, []);
+  
+  // Efecto para navegación
+  useEffect(() => {
+    if (isLoading) return;
+    
+    // Si el usuario no está autenticado y no está en la página de login, redirigir a login
+    if (!user && location !== "/login") {
+      setLocation("/login");
+      return;
+    }
+
+    // Si el usuario está autenticado y está en la página de login, redirigir al dashboard
+    if (user && location === "/login") {
+      setLocation("/");
+      return;
+    }
+  }, [user, location, setLocation, isLoading]);
 
   const handleLogout = async () => {
     try {
@@ -56,31 +74,34 @@ function Router() {
     );
   }
 
-  // If user is not logged in and not on login page, redirect to login
-  if (!user && location !== "/login") {
-    setLocation("/login");
-    return null;
+  // Si el usuario no está autenticado, solo mostramos la ruta de inicio de sesión
+  if (!user) {
+    return (
+      <Switch>
+        <Route path="/login">
+          <Login onLogin={setUser} />
+        </Route>
+        <Route>
+          <Login onLogin={setUser} />
+        </Route>
+      </Switch>
+    );
   }
-
-  // If user is logged in and on login page, redirect to dashboard
-  if (user && location === "/login") {
-    setLocation("/");
-    return null;
-  }
-
+  
+  // Si el usuario está autenticado, mostramos todas las rutas
   return (
     <Switch>
       <Route path="/login">
         <Login onLogin={setUser} />
       </Route>
       <Route path="/">
-        <Dashboard user={user!} onLogout={handleLogout} />
+        <Dashboard user={user} onLogout={handleLogout} />
       </Route>
       <Route path="/tickets">
-        <Tickets user={user!} onLogout={handleLogout} />
+        <Tickets user={user} onLogout={handleLogout} />
       </Route>
       <Route path="/users">
-        {user?.role === "admin" ? (
+        {user.role === "admin" ? (
           <Users user={user} onLogout={handleLogout} />
         ) : (
           <NotFound />
