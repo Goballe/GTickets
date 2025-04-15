@@ -158,7 +158,7 @@ export function TicketDetailsModal({ ticketId, currentUser, allUsers, onClose }:
   };
   
   const handleAssigneeChange = (assigneeId: string) => {
-    const parsedId = assigneeId ? parseInt(assigneeId) : null;
+    const parsedId = assigneeId === "none" ? null : parseInt(assigneeId);
     updateAssigneeMutation.mutate(parsedId);
   };
   

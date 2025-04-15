@@ -187,7 +187,7 @@ export default function CreateTicketDialog({ isOpen, onClose }: CreateTicketDial
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">Unassigned</SelectItem>
+                      <SelectItem value="none">Unassigned</SelectItem>
                       {!isLoadingAgents && agents?.map((agent) => (
                         <SelectItem key={agent.id} value={agent.id.toString()}>
                           {agent.name}

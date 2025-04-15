@@ -442,7 +442,7 @@ export default function TicketDetailsDialog({
                             </div>
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Unassigned</SelectItem>
+                            <SelectItem value="none">Unassigned</SelectItem>
                             {agents?.map((agent) => (
                               <SelectItem 
                                 key={agent.id} 
