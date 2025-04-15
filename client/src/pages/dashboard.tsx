@@ -116,8 +116,10 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
   const renderUserStats = () => {
     if (isLoadingUserTickets) {
       return (
-        <div className="mb-8">
-          <Skeleton className="h-32" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {[1, 2, 3, 4].map(i => (
+            <Skeleton key={i} className="h-32" />
+          ))}
         </div>
       );
     }
@@ -144,51 +146,127 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     });
     
     return (
-      <div className="mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Tarjeta de estadísticas por estado */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-neutral-800 mb-4">Resumen de tus tickets</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <h4 className="text-sm font-medium text-neutral-700 mb-2">Por Estado</h4>
-              {Object.entries(ticketsByStatus)
-                .filter(([status]) => status === "open" || status === "in-progress" || status === "on-hold" || status === "closed")
-                .map(([status, count]) => {
-                  const statusKey = status as keyof typeof TICKET_STATUS;
-                  return (
-                    <div key={status} className="flex items-center justify-between mb-1 text-sm">
-                      <div className="flex items-center">
-                        <span className={`w-3 h-3 rounded-full ${TICKET_STATUS[statusKey].bgColor.replace('/10', '')} mr-2`}></span>
-                        <span>{TICKET_STATUS[statusKey].label}</span>
-                      </div>
-                      <span className="font-medium">{count}</span>
-                    </div>
-                  );
-                })}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 rounded-full bg-status-open/10 text-status-open">
+              <Ticket className="h-6 w-6" />
             </div>
-            
             <div>
-              <h4 className="text-sm font-medium text-neutral-700 mb-2">Por Prioridad</h4>
-              {Object.entries(ticketsByPriority)
-                .filter(([priority]) => priority === "low" || priority === "medium" || priority === "high" || priority === "critical")
-                .map(([priority, count]) => {
-                  const priorityKey = priority as keyof typeof TICKET_PRIORITY;
-                  return (
-                    <div key={priority} className="flex items-center justify-between mb-1 text-sm">
-                      <div className="flex items-center">
-                        <span className={`w-3 h-3 rounded-full ${TICKET_PRIORITY[priorityKey].bgColor.replace('/10', '')} mr-2`}></span>
-                        <span>{TICKET_PRIORITY[priorityKey].label}</span>
-                      </div>
-                      <span className="font-medium">{count}</span>
-                    </div>
-                  );
-                })}
+              <h3 className="text-lg font-semibold text-neutral-800">Mis Tickets</h3>
+              <p className="text-sm text-neutral-500">Total: {userTickets.length}</p>
             </div>
           </div>
           
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">Total de tickets:</span>
-            <span className="font-bold text-primary">{userTickets.length}</span>
+          <div className="space-y-2">
+            {Object.entries(ticketsByStatus)
+              .filter(([status]) => status === "open" || status === "in-progress" || status === "on-hold" || status === "closed")
+              .map(([status, count]) => {
+                const statusKey = status as keyof typeof TICKET_STATUS;
+                const icon = status === "open" ? <Ticket className="h-4 w-4" /> :
+                       status === "in-progress" ? <Clock className="h-4 w-4" /> :
+                       status === "on-hold" ? <PauseCircle className="h-4 w-4" /> :
+                       <CheckCircle className="h-4 w-4" />;
+                
+                return (
+                  <div key={status} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className={`${TICKET_STATUS[statusKey].color}`}>{icon}</span>
+                      <span>{TICKET_STATUS[statusKey].label}</span>
+                    </div>
+                    <span className="font-medium">{count}</span>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+        
+        {/* Tarjeta de estadísticas por prioridad */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 rounded-full bg-priority-high/10 text-priority-high">
+              <AlertCircle className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-neutral-800">Por Prioridad</h3>
+              <p className="text-sm text-neutral-500">Distribución</p>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            {Object.entries(ticketsByPriority)
+              .filter(([priority]) => priority === "low" || priority === "medium" || priority === "high" || priority === "critical")
+              .map(([priority, count]) => {
+                const priorityKey = priority as keyof typeof TICKET_PRIORITY;
+                return (
+                  <div key={priority} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-3 h-3 rounded-full ${TICKET_PRIORITY[priorityKey].bgColor.replace('/10', '')}`}></span>
+                      <span>{TICKET_PRIORITY[priorityKey].label}</span>
+                    </div>
+                    <span className="font-medium">{count}</span>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+        
+        {/* Tarjeta de información de SLA */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 rounded-full bg-primary/10 text-primary">
+              <Clock className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-neutral-800">SLA</h3>
+              <p className="text-sm text-neutral-500">Acuerdos de servicio</p>
+            </div>
+          </div>
+          
+          <div className="space-y-3 text-sm">
+            <p>Los tiempos de respuesta dependen de la prioridad:</p>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <span className="text-priority-critical font-medium">• Crítica:</span>
+                <p className="text-neutral-600">4 horas</p>
+              </div>
+              <div>
+                <span className="text-priority-high font-medium">• Alta:</span>
+                <p className="text-neutral-600">8 horas</p>
+              </div>
+              <div>
+                <span className="text-priority-medium font-medium">• Media:</span>
+                <p className="text-neutral-600">24 horas</p>
+              </div>
+              <div>
+                <span className="text-priority-low font-medium">• Baja:</span>
+                <p className="text-neutral-600">72 horas</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Tarjeta de ayuda */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 rounded-full bg-blue-100 text-blue-600">
+              <FileText className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-neutral-800">Ayuda</h3>
+              <p className="text-sm text-neutral-500">Información útil</p>
+            </div>
+          </div>
+          
+          <div className="space-y-3 text-sm">
+            <p>Recuerda incluir en tus tickets:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Descripción detallada del problema</li>
+              <li>Pasos para reproducir el error</li>
+              <li>Capturas de pantalla si es posible</li>
+              <li>Fecha y hora cuando ocurrió</li>
+            </ul>
           </div>
         </div>
       </div>

@@ -80,6 +80,10 @@ function Router() {
     return <Login onLogin={setUser} />;
   }
   
+  // Dado que ya hemos verificado que user no es null a este punto,
+  // podemos usar una aserción de tipo para ayudar a TypeScript
+  const authenticatedUser = user as User; // Esto es seguro porque ya verificamos que user no es null
+
   // Si el usuario está autenticado, mostramos todas las rutas
   return (
     <Switch>
@@ -87,14 +91,14 @@ function Router() {
         <Login onLogin={setUser} />
       </Route>
       <Route path="/">
-        <Dashboard user={user} onLogout={handleLogout} />
+        <Dashboard user={authenticatedUser} onLogout={handleLogout} />
       </Route>
       <Route path="/tickets">
-        <Tickets user={user} onLogout={handleLogout} />
+        <Tickets user={authenticatedUser} onLogout={handleLogout} />
       </Route>
       <Route path="/users">
-        {user.role === "admin" ? (
-          <Users user={user} onLogout={handleLogout} />
+        {authenticatedUser.role === "admin" ? (
+          <Users user={authenticatedUser} onLogout={handleLogout} />
         ) : (
           <NotFound />
         )}
