@@ -325,7 +325,7 @@ export function TicketDetailsModal({ ticketId, currentUser, allUsers, onClose }:
                         <SelectValue placeholder="Reasignar" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Sin asignar</SelectItem>
+                        <SelectItem value="none">Sin asignar</SelectItem>
                         {agents.map(agent => (
                           <SelectItem key={agent.id} value={agent.id.toString()}>
                             {agent.name}

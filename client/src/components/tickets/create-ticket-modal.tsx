@@ -209,7 +209,7 @@ export function CreateTicketModal({ isOpen, onClose, currentUser }: CreateTicket
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Sin asignar</SelectItem>
+                          <SelectItem value="none">Sin asignar</SelectItem>
                           {agents.map((agent) => (
                             <SelectItem key={agent.id} value={agent.id.toString()}>
                               {agent.name}

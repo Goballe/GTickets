@@ -40,7 +40,7 @@ export function TicketFilters({ filters, onFilterChange }: TicketFiltersProps) {
           <SelectValue placeholder="Todos los estados" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Todos los estados</SelectItem>
+          <SelectItem value="all">Todos los estados</SelectItem>
           {Object.entries(TICKET_STATUS).map(([key, { label }]) => (
             <SelectItem key={key} value={key}>{label}</SelectItem>
           ))}
@@ -55,7 +55,7 @@ export function TicketFilters({ filters, onFilterChange }: TicketFiltersProps) {
           <SelectValue placeholder="Todas las prioridades" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Todas las prioridades</SelectItem>
+          <SelectItem value="all">Todas las prioridades</SelectItem>
           {Object.entries(TICKET_PRIORITY).map(([key, { label }]) => (
             <SelectItem key={key} value={key}>{label}</SelectItem>
           ))}
