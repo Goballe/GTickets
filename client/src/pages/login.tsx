@@ -11,7 +11,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardFooter
+  CardFooter,
 } from "@/components/ui/card";
 import {
   Form,
@@ -19,7 +19,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ import { Loader2 } from "lucide-react";
 
 const loginSchema = z.object({
   username: z.string().min(1, "El nombre de usuario es requerido"),
-  password: z.string().min(1, "La contraseña es requerida")
+  password: z.string().min(1, "La contraseña es requerida"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -39,15 +39,15 @@ interface LoginProps {
 export default function Login({ onLogin }: LoginProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
-      password: ""
-    }
+      password: "",
+    },
   });
-  
+
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
       return apiRequest("POST", "/api/auth/login", data);
@@ -64,24 +64,26 @@ export default function Login({ onLogin }: LoginProps) {
       toast({
         title: "Error de inicio de sesión",
         description: "Usuario o contraseña incorrectos",
-        variant: "destructive"
+        variant: "destructive",
       });
     },
     onSettled: () => {
       setIsSubmitting(false);
-    }
+    },
   });
-  
+
   const onSubmit = (data: LoginFormData) => {
     setIsSubmitting(true);
     loginMutation.mutate(data);
   };
-  
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-neutral-100">
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">SupportDesk</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            HelpDesk JLV
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -93,13 +95,16 @@ export default function Login({ onLogin }: LoginProps) {
                   <FormItem>
                     <FormLabel>Usuario</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ingresa tu nombre de usuario" {...field} />
+                      <Input
+                        placeholder="Ingresa tu nombre de usuario"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="password"
@@ -107,13 +112,17 @@ export default function Login({ onLogin }: LoginProps) {
                   <FormItem>
                     <FormLabel>Contraseña</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Ingresa tu contraseña" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="Ingresa tu contraseña"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
@@ -131,13 +140,16 @@ export default function Login({ onLogin }: LoginProps) {
           <div className="text-sm text-neutral-500 text-center">
             <p>Cuentas por defecto:</p>
             <p>
-              <span className="font-medium">Usuario:</span> user, <span className="font-medium">Contraseña:</span> user123
+              <span className="font-medium">Usuario:</span> user,{" "}
+              <span className="font-medium">Contraseña:</span> user123
             </p>
             <p>
-              <span className="font-medium">Agente:</span> agent, <span className="font-medium">Contraseña:</span> agent123
+              <span className="font-medium">Agente:</span> agent,{" "}
+              <span className="font-medium">Contraseña:</span> agent123
             </p>
             <p>
-              <span className="font-medium">Admin:</span> admin, <span className="font-medium">Contraseña:</span> admin123
+              <span className="font-medium">Admin:</span> admin,{" "}
+              <span className="font-medium">Contraseña:</span> admin123
             </p>
           </div>
         </CardFooter>
