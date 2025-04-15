@@ -56,6 +56,23 @@ export function TicketList({ currentUser }: TicketListProps) {
   });
   
   const getUserById = (userId: number): User => {
+    // Si es el usuario actual, devolver directamente
+    if (userId === currentUser.id) {
+      return currentUser;
+    }
+    
+    // Para usuarios normales que no tienen acceso a la lista de usuarios
+    if (currentUser.role === "user") {
+      return {
+        id: userId,
+        name: userId === currentUser.id ? currentUser.name : "Usuario del Sistema",
+        username: userId === currentUser.id ? currentUser.username : "system",
+        email: userId === currentUser.id ? currentUser.email : "system@supportdesk.com",
+        role: "user"
+      };
+    }
+    
+    // Para admin/agentes que tienen la lista completa de usuarios
     return users.find(user => user.id === userId) || {
       id: userId,
       name: "Usuario Desconocido",

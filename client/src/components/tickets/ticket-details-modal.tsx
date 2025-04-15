@@ -164,6 +164,23 @@ export function TicketDetailsModal({ ticketId, currentUser, allUsers, onClose }:
   
   // Get user details
   const getUser = (userId: number): User | undefined => {
+    // Si es el usuario actual, devolver directamente
+    if (userId === currentUser.id) {
+      return currentUser;
+    }
+    
+    // Para usuarios normales que no tienen acceso a la lista de usuarios
+    if (currentUser.role === "user") {
+      return {
+        id: userId,
+        name: userId === currentUser.id ? currentUser.name : "Usuario del Sistema",
+        username: userId === currentUser.id ? currentUser.username : "system",
+        email: userId === currentUser.id ? currentUser.email : "system@supportdesk.com",
+        role: "user"
+      };
+    }
+    
+    // Para admin/agentes que tienen la lista completa de usuarios
     return allUsers.find(user => user.id === userId);
   };
   
@@ -208,8 +225,10 @@ export function TicketDetailsModal({ ticketId, currentUser, allUsers, onClose }:
   const priorityInfo = TICKET_PRIORITY[ticket.priority];
   const slaInfo = getSlaInfo(ticket.slaDeadline, ticket.status);
   
-  // Filter agents for reassignment
-  const agents = allUsers.filter(user => user.role === "agent" || user.role === "admin");
+  // Filter agents for reassignment (solo para usuarios admin/agentes)
+  const agents = currentUser.role === "user" 
+    ? [] 
+    : allUsers.filter(user => user.role === "agent" || user.role === "admin");
   
   // Determine if critical impact alert should be shown
   const showCriticalAlert = ticket.priority === "critical" && ticket.status !== "closed";
