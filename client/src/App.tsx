@@ -74,18 +74,10 @@ function Router() {
     );
   }
 
-  // Si el usuario no está autenticado, solo mostramos la ruta de inicio de sesión
-  if (!user) {
-    return (
-      <Switch>
-        <Route path="/login">
-          <Login onLogin={setUser} />
-        </Route>
-        <Route>
-          <Login onLogin={setUser} />
-        </Route>
-      </Switch>
-    );
+  // Si el usuario no está autenticado, y no estamos en la página de login, 
+  // mostrar la pantalla de login directamente sin usar Switch
+  if (!user && !isLoading) {
+    return <Login onLogin={setUser} />;
   }
   
   // Si el usuario está autenticado, mostramos todas las rutas
