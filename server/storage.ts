@@ -8,7 +8,7 @@ import {
 import { nanoid } from "nanoid";
 
 // SLA times in milliseconds based on priority
-const SLA_TIMES = {
+export const SLA_TIMES = {
   "low": 72 * 60 * 60 * 1000, // 72 hours
   "medium": 24 * 60 * 60 * 1000, // 24 hours
   "high": 8 * 60 * 60 * 1000, // 8 hours
@@ -384,4 +384,46 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import session from "express-session";
+import { DatabaseStorage } from "./database-storage";
+
+// Actualizar la interfaz IStorage para incluir sessionStore
+export interface IStorage {
+  // User operations
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  getUsers(): Promise<User[]>;
+
+  // Ticket operations
+  createTicket(ticket: InsertTicket, createdById: number): Promise<Ticket>;
+  getTicket(id: number): Promise<Ticket | undefined>;
+  getTicketByNumber(ticketNumber: string): Promise<Ticket | undefined>;
+  getTickets(filters?: { status?: TicketStatus; priority?: TicketPriority; assignedToId?: number; createdById?: number }): Promise<Ticket[]>;
+  updateTicketStatus(id: number, status: TicketStatus, userId: number): Promise<Ticket | undefined>;
+  updateTicketAssignee(id: number, assignedToId: number | null, userId: number): Promise<Ticket | undefined>;
+  getTicketStats(): Promise<{ open: number; inProgress: number; onHold: number; closed: number }>;
+
+  // Comment operations
+  createComment(comment: InsertComment, userId: number): Promise<Comment>;
+  getCommentsByTicketId(ticketId: number): Promise<Comment[]>;
+
+  // Activity operations
+  createActivity(activity: InsertActivity, userId: number): Promise<Activity>;
+  getActivitiesByTicketId(ticketId: number): Promise<Activity[]>;
+  
+  // Performance metrics
+  getAgentPerformance(): Promise<{ userId: number; username: string; name: string; ticketsResolved: number; averageResolutionTime: number; slaComplianceRate: number }[]>;
+  getPriorityPerformance(): Promise<{ priority: TicketPriority; slaComplianceRate: number }[]>;
+  
+  // Session store (para PostgreSQL)
+  sessionStore?: any;
+}
+
+// Usar PostgreSQL en producción y memoria en desarrollo
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Si estamos en producción o tenemos una URL de base de datos, usar PostgreSQL
+export const storage = process.env.DATABASE_URL || isProduction 
+  ? new DatabaseStorage() 
+  : new MemStorage();
