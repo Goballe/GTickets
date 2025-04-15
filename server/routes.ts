@@ -196,7 +196,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.patch("/api/tickets/:id/status", requireAuth, async (req, res) => {
+  app.patch("/api/tickets/:id/status", requireAuth, requireRole(["admin", "agent"]), async (req, res) => {
     try {
       const ticketId = parseInt(req.params.id);
       const { status } = req.body;
@@ -210,11 +210,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!ticket) {
         return res.status(404).json({ message: "Ticket not found" });
-      }
-      
-      // Only admin, agent, or the creator can update status
-      if (user.role === "user" && ticket.createdById !== user.id) {
-        return res.status(403).json({ message: "Forbidden" });
       }
       
       const updatedTicket = await storage.updateTicketStatus(ticketId, status, user.id);

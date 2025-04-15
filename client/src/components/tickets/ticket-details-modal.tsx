@@ -294,8 +294,8 @@ export function TicketDetailsModal({ ticketId, currentUser, allUsers, onClose }:
             <div className="mb-6">
               <h4 className="text-sm font-medium text-neutral-700 mb-3">Acciones</h4>
               <div className="flex flex-wrap gap-2">
-                {/* Status Change Dropdown */}
-                {(currentUser.role === "admin" || currentUser.role === "agent" || ticket.createdById === currentUser.id) && (
+                {/* Status Change Dropdown - Solo para admin y agentes */}
+                {(currentUser.role === "admin" || currentUser.role === "agent") && (
                   <div className="flex items-center gap-2">
                     <Select
                       value={ticket.status}
